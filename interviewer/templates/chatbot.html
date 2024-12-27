@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Chatbot</title>
+    <link rel="stylesheet" href="static\css\style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <style>
+        /* Base styles */
+:root {
+    --primary-color: #4f46e5;
+    --primary-hover: #4338ca;
+    --bg-gradient-from: #eef2ff;
+    --bg-gradient-to: #e0e7ff;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, var(--bg-gradient-from), var(--bg-gradient-to));
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.container {
+    max-width: 1000px;
+    width: 100%;
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    height: 90vh;
+}
+
+/* Header styles */
+.header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--primary-color);
+}
+
+h1 {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+.header-right {
+    display: flex;
+    gap: 1rem;
+}
+
+.badge {
+    padding: 0.5rem 1rem;
+    background: #f3f4f6;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+/* Progress bar */
+.progress-bar {
+    height: 0.5rem;
+    background: #f3f4f6;
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--primary-color);
+    transition: width 0.5s ease-out;
+    width: 0%;
+}
+
+/* Chat container */
+.chat-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.message {
+    max-width: 80%;
+    padding: 1rem;
+    border-radius: 1rem;
+    animation: fadeIn 0.3s ease-out;
+    position: relative;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.message.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.message.user {
+    background: var(--primary-color);
+    color: white;
+    margin-left: auto;
+    border-bottom-right-radius: 0.25rem;
+}
+
+.message.bot {
+    background: #f3f4f6;
+    color: var(--text-primary);
+    margin-right: auto;
+    border-bottom-left-radius: 0.25rem;
+}
+
+.message.feedback {
+    background: #ecfdf5;
+    border-left: 4px solid #10b981;
+    color: var(--text-primary);
+    margin-right: auto;
+}
+
+/* Typing indicator */
+.typing-indicator {
+    display: none;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: #f3f4f6;
+    border-radius: 1rem;
+    width: fit-content;
+    margin-right: auto;
+}
+
+.dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    background: var(--text-secondary);
+    border-radius: 50%;
+    animation: bounce 1.4s infinite ease-in-out;
+}
+
+.dot:nth-child(1) { animation-delay: -0.32s; }
+.dot:nth-child(2) { animation-delay: -0.16s; }
+
+/* Input area */
+.input-area {
+    padding: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.input-group {
+    display: flex;
+    gap: 1rem;
+}
+
+input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+button:hover:not(:disabled) {
+    background: var(--primary-hover);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.send-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.modal.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    text-align: center;
+    transform: scale(0.9);
+    transition: transform 0.3s;
+    max-width: 90%;
+    width: 400px;
+}
+
+.modal.show .modal-content {
+    transform: scale(1);
+}
+
+.success-icon, .try-again-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    animation: bounce 1s infinite;
+}
+
+.hidden {
+    display: none;
+}
+.close-button {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    font-size: 24px;
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+.close-button:hover {
+    color: #374151;
+}
+
+.modal-content {
+    position: relative;
+}
+.ribbons {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+}
+
+.ribbon {
+    position: absolute;
+    width: 150px;
+    height: 40px;
+    background: #FFD700;
+    top: 20px;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+}
+
+.ribbon.left {
+    left: -150px;
+    transform: rotate(-45deg);
+    animation-name: slideInLeft;
+}
+
+.ribbon.right {
+    right: -150px;
+    transform: rotate(45deg);
+    animation-name: slideInRight;
+}
+
+@keyframes slideInLeft {
+    to {
+        left: -20px;
+    }
+}
+
+@keyframes slideInRight {
+    to {
+        right: -20px;
+    }
+}
+
+.try-again-icon {
+    font-size: 4rem;
+    margin: 1rem 0;
+    animation: fadeInDown 1s;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.close-button {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    font-size: 24px;
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 5px 10px;
+    z-index: 10;
+}
+
+.modal-content {
+    position: relative;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+    .container {
+        height: 100vh;
+        border-radius: 0;
+    }
+
+    .header-content {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .message {
+        max-width: 90%;
+    }
+}
+    </style>
+
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                    </svg>
+                    <h1>Interview Chatbot</h1>
+                </div>
+                <div class="header-right">
+                    <div class="badge" id="points">Points: 0</div>
+                    <div class="badge" id="progress">Progress: 0%</div>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </header>
+
+        <main class="chat-container" id="chat-container">
+            <div id="typing-indicator" class="typing-indicator">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </main>
+
+        <footer class="input-area">
+            <div class="input-group">
+                <input type="text" id="user-input" placeholder="Type your answer..." disabled>
+                <button id="send-button" disabled>
+                    <svg class="send-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                    </svg>
+                    Send
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Result Modal -->
+    <div id="result-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-button" onclick="closeModal()">×</button>
+            <div id="success-animation" class="hidden">
+                <div class="ribbons">
+                    <div class="ribbon left"></div>
+                    <div class="ribbon right"></div>
+                </div>
+                <div class="success-icon">🏆</div>
+                <h2>Congratulations! 🎉</h2>
+                <p>You've been selected! Well done on your performance.</p>
+            </div>
+            <div id="try-again-animation" class="hidden">
+                <div class="try-again-icon">😔</div>
+                <h2>Thank you for applying</h2>
+                <p>We appreciate your time and effort 🙏<br>Keep improving and try again! 💪</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        
+        // State management
+let currentQuestion = 0;
+let totalPoints = 0;
+let currentQuestionText = "";
+let currentQuestionRange = "";
+let waitingForAnswer = true;
+let isIntroQuestion = true;
+
+// Get URL parameters
+const urlParams = new URLSearchParams(window.location.search);
+const userName = urlParams.get('name') || 'Candidate';
+const numQuestions = parseInt(urlParams.get('questions'), 10) || 5;
+const totalQuestions = numQuestions + 1;
+const jobRole = urlParams.get('job_role') || 'Software Developer';
+
+// DOM Elements
+const chatContainer = document.getElementById('chat-container');
+const typingIndicator = document.getElementById('typing-indicator');
+const userInput = document.getElementById('user-input');
+const sendButton = document.getElementById('send-button');
+const progressFill = document.getElementById('progress-fill');
+const pointsDisplay = document.getElementById('points');
+const progressDisplay = document.getElementById('progress');
+const resultModal = document.getElementById('result-modal');
+const successAnimation = document.getElementById('success-animation');
+const tryAgainAnimation = document.getElementById('try-again-animation');
+
+// Utility functions
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+function updateProgress() {
+    const progressPercentage = (currentQuestion / totalQuestions) * 100;
+    progressFill.style.width = `${progressPercentage}%`;
+    progressDisplay.textContent = `Progress: ${Math.round(progressPercentage)}%`;
+}
+
+async function typeText(element, text) {
+    const words = text.split(' ');
+    element.textContent = '';
+    for (let i = 0; i < words.length; i++) {
+        element.textContent += words[i] + ' ';
+        await sleep(50);
+    }
+}
+function closeModal() {
+    resultModal.classList.remove('show');
+}
+
+function showTypingIndicator() {
+    typingIndicator.style.display = 'flex';
+}
+
+function hideTypingIndicator() {
+    typingIndicator.style.display = 'none';
+}
+
+function showResult(isSelected) {
+    resultModal.classList.add('show');
+    if (isSelected) {
+        successAnimation.classList.remove('hidden');
+        tryAgainAnimation.classList.add('hidden');
+    } else {
+        successAnimation.classList.add('hidden');
+        tryAgainAnimation.classList.remove('hidden');
+    }
+}
+
+// Message handling
+async function appendMessage(text, type) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${type}`;
+    
+    if (type === 'bot' || type === 'feedback') {
+        showTypingIndicator();
+        await sleep(1000);
+        
+        if (type === 'feedback') {
+            messageDiv.innerHTML = text
+                .replace(/\n/g, '<br>')
+                .replace(/Score: (\d+\/10)/, '<strong>Score: $1</strong>')
+                .replace(/Grammar: (.*?)(<br>|$)/, '<strong>Grammar:</strong> $1$2')
+                .replace(/Assessment: (.*?)(<br>|$)/, '<strong>Assessment:</strong> $1$2')
+                .replace(/To improve: (.*?)(<br>|$)/, '<strong>To improve:</strong> $1$2');
+        } else {
+            const textSpan = document.createElement('span');
+            messageDiv.appendChild(textSpan);
+            await typeText(textSpan, text);
+        }
+        
+        hideTypingIndicator();
+    } else {
+        messageDiv.textContent = text;
+    }
+    
+    chatContainer.insertBefore(messageDiv, typingIndicator);
+    messageDiv.scrollIntoView({ behavior: 'smooth' });
+    
+    // Trigger animation after insert
+    requestAnimationFrame(() => {
+        messageDiv.classList.add('show');
+    });
+}
+
+// API interaction
+async function fetchNextQuestion() {
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const resumeText = urlParams.get('resume') || '';
+        
+        currentQuestionRange = currentQuestion <= numQuestions * 0.5
+            ? 'core_skills'
+            : currentQuestion <= numQuestions * 0.8
+            ? 'resume_based'
+            : 'general';
+
+        const response = await fetch('/generate_question', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                job_role: jobRole,
+                resume: resumeText,
+                question_range: currentQuestionRange
+            })
+        });
+
+        const data = await response.json();
+        if (data.question) {
+            currentQuestionText = data.question;
+            await appendMessage(
+                `Question ${currentQuestion}/${totalQuestions} (${currentQuestionRange}):\n${data.question}`,
+                'bot'
+            );
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        await appendMessage('Error generating question. Please refresh the page.', 'bot');
+    }
+}
+
+// Input handling
+async function handleUserInput() {
+    if (!waitingForAnswer) return;
+    
+    const input = userInput.value.trim();
+    if (!input) return;
+
+    waitingForAnswer = false;
+    userInput.value = '';
+    userInput.disabled = true;
+    sendButton.disabled = true;
+    
+    await appendMessage(input, 'user');
+    currentQuestion++;
+    updateProgress();
+
+    try {
+        const endpoint = isIntroQuestion ? '/ask_personal_question' : '/evaluate_response';
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                question: currentQuestionText,
+                user_response: input
+            })
+        });
+
+        const data = await response.json();
+        totalPoints += parseInt(data.Score);
+        pointsDisplay.textContent = `Points: ${totalPoints}`;
+        
+        await appendMessage(
+            `Score: ${data.Score}/10\nAssessment: ${data.Overall_assessment}\nTo improve: ${data.To_improve_answer}\nGrammar: ${data.grammar_suggestion}`,
+            'feedback'
+        );
+
+        if (isIntroQuestion) {
+            isIntroQuestion = false;
+            await fetchNextQuestion();
+        } else if (currentQuestion < totalQuestions) {
+            await fetchNextQuestion();
+        } else {
+            const finalScore = (totalPoints / (totalQuestions * 10)) * 100;
+            const isSelected = finalScore >= 60;
+            
+            await appendMessage(
+                `Interview Complete!\nFinal Score: ${finalScore.toFixed(2)}%\nStatus: ${isSelected ? 'Selected' : 'Not Selected'}\n\nThank you for participating in this interview process.`,
+                'bot'
+            );
+            
+            showResult(isSelected);
+            return;
+        }
+    } catch (error) {
+        await appendMessage('Error processing response. Please try again.', 'bot');
+        console.error('Error:', error);
+    }
+    
+    userInput.disabled = false;
+    sendButton.disabled = false;
+    waitingForAnswer = true;
+}
+
+// Event listeners
+sendButton.addEventListener('click', handleUserInput);
+userInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') handleUserInput();
+});
+
+// Initialize chat
+async function initializeChat() {
+    await sleep(1000);
+    await appendMessage(
+        `Welcome ${userName}! Let's begin your interview for the position of ${jobRole}.`,
+        'bot'
+    );
+    await sleep(1000);
+    
+    currentQuestion = 0;
+    updateProgress();
+    currentQuestionText = "Tell me about yourself.";
+    currentQuestionRange = "Introduction";
+    
+    await appendMessage(
+        `Question ${currentQuestion + 1}/${totalQuestions} (${currentQuestionRange}):\nPlease tell me about yourself.`,
+        'bot'
+    );
+    
+    userInput.disabled = false;
+    sendButton.disabled = false;
+}
+
+// Start the chat
+initializeChat();
+    </script>
+</body>
+</html>
