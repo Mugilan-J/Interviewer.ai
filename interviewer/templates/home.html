@@ -79,7 +79,6 @@
             overflow: hidden;
         }
 
-        /* Background Circles Animation */
         .circle {
             position: absolute;
             border-radius: 50%;
@@ -119,7 +118,6 @@
             100% { transform: translate(0, 0) rotate(360deg); }
         }
 
-        /* Swing Animation for Images */
         .hero-image {
     width: 100%;
     max-width: 600px;
@@ -219,7 +217,6 @@
             50% { transform: translateY(-10px); }
         }
 
-        /* New Images Section Styles */
         .images-section {
         padding: 5rem 0;
         background: #f8f9fa;
@@ -285,12 +282,7 @@
     </style>
 </head>
 <body>
-    <!-- <nav class="navbar nav-custom">
-        <div class="container">
-            <a class="navbar-brand text-white fs-4" href="#">AI Interview Assistant</a>
-            <a class="nav-link text-white" href="#about">About Us</a>
-        </div>
-    </nav> -->
+
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
             <a class="navbar-brand" href="#"><span>Interviewer</span>.<b>ai</b></a>
@@ -300,7 +292,6 @@
         </div>
     </nav>
     <section class="hero-section">
-        <!-- Animated Background Circles -->
         <div class="circle"></div>
         <div class="circle"></div>
         <div class="circle"></div>
@@ -331,7 +322,6 @@
                             <div class="mb-4 position-relative">
                                 <label for="resumeInput" class="form-label">Upload your Resume:</label>
                                 <input class="form-control" type="file" id="resumeInput" name="resume" accept=".pdf" required>
-                                <!-- <small id="uploadStatus" class="text-muted mb-3">         Upload your resume</small> -->
                                 <span id="uploadSuccess" class="upload-success-icon d-none">✔</span>
                             </div>
                             <button type="submit" class="btn custom-btn text-white w-100">Start Interview Preparation</button>
@@ -393,7 +383,6 @@
     </section>
 
     <script>
-        // Animation for feature cards
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -406,7 +395,6 @@
             observer.observe(card);
         });
 
-        // Form submission
         let resumeText = '';
         document.getElementById('uploadForm').addEventListener('submit', async function(e) {
             e.preventDefault();
