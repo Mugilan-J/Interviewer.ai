@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="static\css\style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
     <style>
-        /* Base styles */
+        
 :root {
     --primary-color: #4f46e5;
     --primary-hover: #4338ca;
@@ -44,7 +44,6 @@ body {
     height: 90vh;
 }
 
-/* Header styles */
 .header {
     padding: 1.5rem;
     border-bottom: 1px solid #e5e7eb;
@@ -89,7 +88,6 @@ h1 {
     color: var(--text-primary);
 }
 
-/* Progress bar */
 .progress-bar {
     height: 0.5rem;
     background: #f3f4f6;
@@ -104,7 +102,6 @@ h1 {
     width: 0%;
 }
 
-/* Chat container */
 .chat-container {
     flex: 1;
     overflow-y: auto;
@@ -150,7 +147,6 @@ h1 {
     margin-right: auto;
 }
 
-/* Typing indicator */
 .typing-indicator {
     display: none;
     gap: 0.5rem;
@@ -172,7 +168,6 @@ h1 {
 .dot:nth-child(1) { animation-delay: -0.32s; }
 .dot:nth-child(2) { animation-delay: -0.16s; }
 
-/* Input area */
 .input-area {
     padding: 1.5rem;
     border-top: 1px solid #e5e7eb;
@@ -227,7 +222,6 @@ button:disabled {
     height: 1.25rem;
 }
 
-/* Modal */
 .modal {
     display: none;
     position: fixed;
@@ -366,7 +360,6 @@ button:disabled {
     position: relative;
 }
 
-/* Animations */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -392,7 +385,6 @@ button:disabled {
     to { width: 100% }
 }
 
-/* Responsive design */
 @media (max-width: 640px) {
     .container {
         height: 100vh;
@@ -453,7 +445,6 @@ button:disabled {
         </footer>
     </div>
 
-    <!-- Result Modal -->
     <div id="result-modal" class="modal">
         <div class="modal-content">
             <button class="close-button" onclick="closeModal()">×</button>
@@ -476,7 +467,6 @@ button:disabled {
 
     <script>
         
-        // State management
 let currentQuestion = 0;
 let totalPoints = 0;
 let currentQuestionText = "";
@@ -484,14 +474,12 @@ let currentQuestionRange = "";
 let waitingForAnswer = true;
 let isIntroQuestion = true;
 
-// Get URL parameters
 const urlParams = new URLSearchParams(window.location.search);
 const userName = urlParams.get('name') || 'Candidate';
 const numQuestions = parseInt(urlParams.get('questions'), 10) || 5;
 const totalQuestions = numQuestions + 1;
 const jobRole = urlParams.get('job_role') || 'Software Developer';
 
-// DOM Elements
 const chatContainer = document.getElementById('chat-container');
 const typingIndicator = document.getElementById('typing-indicator');
 const userInput = document.getElementById('user-input');
@@ -503,7 +491,6 @@ const resultModal = document.getElementById('result-modal');
 const successAnimation = document.getElementById('success-animation');
 const tryAgainAnimation = document.getElementById('try-again-animation');
 
-// Utility functions
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 function updateProgress() {
@@ -543,7 +530,6 @@ function showResult(isSelected) {
     }
 }
 
-// Message handling
 async function appendMessage(text, type) {
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${type}`;
@@ -579,7 +565,6 @@ async function appendMessage(text, type) {
     });
 }
 
-// API interaction
 async function fetchNextQuestion() {
     try {
         const urlParams = new URLSearchParams(window.location.search);
@@ -615,7 +600,6 @@ async function fetchNextQuestion() {
     }
 }
 
-// Input handling
 async function handleUserInput() {
     if (!waitingForAnswer) return;
     
@@ -678,13 +662,11 @@ async function handleUserInput() {
     waitingForAnswer = true;
 }
 
-// Event listeners
 sendButton.addEventListener('click', handleUserInput);
 userInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') handleUserInput();
 });
 
-// Initialize chat
 async function initializeChat() {
     await sleep(1000);
     await appendMessage(
@@ -707,7 +689,6 @@ async function initializeChat() {
     sendButton.disabled = false;
 }
 
-// Start the chat
 initializeChat();
     </script>
 </body>
